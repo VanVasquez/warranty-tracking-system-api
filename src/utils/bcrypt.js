@@ -2,15 +2,32 @@ const bcrypt = require('bcryptjs');
 
 module.exports = {
   encryptPassword: (password) => {
-    bcrypt.genSalt(10, function (err, salt) {
-      bcrypt.hash(password, salt, function (err, hash) {
-        return hash;
+    return new Promise((resolve, reject) => {
+      bcrypt.genSalt(10, function (err, salt) {
+        if (err) {
+          reject(err);
+        } else {
+          bcrypt.hash(password, salt, function (err, hash) {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(hash);
+            }
+          });
+        }
       });
     });
   },
+
   checkPassword: (password, existingPassword) => {
-    bcrypt.compare(password, existingPassword, (err, match) => {
-      return match;
+    return new Promise((resolve, reject) => {
+      bcrypt.compare(password, existingPassword, (err, match) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(match);
+        }
+      });
     });
   },
 };
