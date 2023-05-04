@@ -82,4 +82,22 @@ module.exports = {
       });
     });
   },
+  ValidEmail: async (req, res) => {
+    const { username } = req.query;
+    const query = `
+    SELECT * FROM users WHERE username = '${username}' LIMIT 0,100
+    `;
+    db.query(query, (err, result) => {
+      if (err) {
+        console.log(err);
+        return res
+          .status(500)
+          .json({ message: 'An error occured while checking users existence', error: err });
+      }
+      if (result.length === 0) {
+        return res.status(200).json({ message: 'good username' });
+      }
+      return res.status(406).json({ message: 'username taken' });
+    });
+  },
 };

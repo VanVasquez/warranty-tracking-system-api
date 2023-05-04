@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const db = require('../database');
+const { generateAccessToken } = require('../utils/token');
 
 module.exports = {
   Refresh: async (req, res) => {
@@ -8,9 +9,8 @@ module.exports = {
 
     const refreshToken = cookies.jwt;
     const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
-    console.log(decoded);
     const query = `
-      SELECT (*) FROM users WHERE username = '${decoded.UserInfo.username}'
+      SELECT * FROM users WHERE username = '${decoded.username}'
     `;
     db.query(query, (err, result) => {
       if (err) {
