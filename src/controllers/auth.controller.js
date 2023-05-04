@@ -61,24 +61,25 @@ module.exports = {
       }
       const fetchUser = result[0];
 
-      checkPassword(user.password, fetchUser.password).catch(() => {
-        return res.status(401).json({ message: 'invalid username or password' });
-      });
+      checkPassword(user.password, fetchUser.password).then((match) => {
+        if (!match) {
+          return res.status(401).json({ message: 'invalid username or password' });
+        }
+        const accessToken = generateAccessToken(fetchUser);
+        const refreshToken = generateRefreshToken(fetchUser);
 
-      const accessToken = generateAccessToken(fetchUser);
-      const refreshToken = generateRefreshToken(fetchUser);
+        res.cookie('jwt', refreshToken, {
+          httpOnly: true,
+          sameSite: 'None',
+          secure: true,
+          maxAge: 24 * 60 * 60 * 1000,
+        });
 
-      res.cookie('jwt', refreshToken, {
-        httpOnly: true,
-        sameSite: 'None',
-        secure: true,
-        maxAge: 24 * 60 * 60 * 1000,
-      });
-
-      res.status(200).json({
-        message: 'Login successful',
-        user: fetchUser.name,
-        accessToken: accessToken,
+        res.status(200).json({
+          message: 'Login successful',
+          user: fetchUser.name,
+          accessToken: accessToken,
+        });
       });
     });
   },

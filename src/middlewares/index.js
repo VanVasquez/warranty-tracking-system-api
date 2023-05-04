@@ -4,6 +4,7 @@ const { verifyAccessToken } = require('../utils/token');
 module.exports = {
   credentials: function (req, res, next) {
     const origin = req.headers.origin;
+    console.log(origin);
     if (allowedOrigins.includes(origin)) {
       res.header('Access-Control-Allow-Credentials', true);
     }
