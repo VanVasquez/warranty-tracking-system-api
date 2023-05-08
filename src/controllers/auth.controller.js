@@ -60,7 +60,10 @@ module.exports = {
         return res.status(401).json({ message: 'invalid username or password' });
       }
       const fetchUser = result[0];
-
+      console.log(fetchUser);
+      if (!fetchUser.verified) {
+        return res.status(401).json({ message: 'account still in verification stage' });
+      }
       checkPassword(user.password, fetchUser.password).then((match) => {
         if (!match) {
           return res.status(401).json({ message: 'invalid username or password' });
